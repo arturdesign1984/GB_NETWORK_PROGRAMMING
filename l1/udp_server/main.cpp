@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
     }
 
     socket_wrapper::SocketWrapper sock_wrap;
-    const int port = 22000; //{ std::stoi(argv[1]) };
+    const int port = { std::stoi(argv[1]) };
 
     socket_wrapper::Socket sock = {AF_INET, SOCK_DGRAM, IPPROTO_UDP};
 
@@ -55,6 +55,7 @@ int main(int argc, char const *argv[])
     }
 
     char buffer[256];
+    bool exit = false;
 
     // socket address used to store client address
     struct sockaddr_in client_address = {0};
@@ -64,7 +65,7 @@ int main(int argc, char const *argv[])
     std::cout << "Running echo server...\n" << std::endl;
     char client_address_buf[INET_ADDRSTRLEN];
 
-    while (true)
+    while (!exit)
     {
         // Read content into buffer from an incoming client.
         recv_len = recvfrom(sock, buffer, sizeof(buffer) - 1, 0,
@@ -75,26 +76,44 @@ int main(int argc, char const *argv[])
         {
             buffer[recv_len] = '\0';
             std::cout
-                << "Client with address "
+                << "Client with address: "
                 << inet_ntop(AF_INET, &client_address.sin_addr, client_address_buf, sizeof(client_address_buf) / sizeof(client_address_buf[0]))
                 << ":" << ntohs(client_address.sin_port)
-                << " sent datagram "
+                << " | sent datagram "
                 << "[length = "
                 << recv_len
                 << "]:\n'''\n"
                 << buffer
                 << "\n'''"
                 << std::endl;
-            //if ("exit" == command_string) run = false;
-            //send(sock, &buf, readden, 0);
+                
+            if(std::string(buffer) == "exit")
+            {
+                exit = true;
+            }
 
-/*            std::string command_string = {buffer, 0, len};
-            rtrim(command_string);
-            std::cout << command_string << std::endl;
-*/
-            // Send same content back to the client ("echo").
-            sendto(sock, buffer, recv_len, 0, reinterpret_cast<const sockaddr *>(&client_address),
-                   client_address_len);
+            // struct sockaddr *addr; 
+            // socklen_t addrlen; 
+            char hbuf[256];
+            std::string return_client_name_and_data;
+            if(getnameinfo(reinterpret_cast<sockaddr *>(&client_address), client_address_len, hbuf, sizeof(hbuf), nullptr, 0, NI_NAMEREQD)) 
+            {
+                return_client_name_and_data = "No name " + std::string(buffer);
+            }
+            else 
+            {
+                return_client_name_and_data = std::string(hbuf) + ' ' + std::string(buffer);
+            }
+                // if ("exit" == command_string) run = false;
+                // send(sock, &buf, readden, 0);
+
+                /*            std::string command_string = {buffer, 0, len};
+                            rtrim(command_string);
+                            std::cout << command_string << std::endl;
+                */
+                // Send same content back to the client ("echo").
+            sendto(sock, return_client_name_and_data.c_str(), return_client_name_and_data.size(), 0, reinterpret_cast<const sockaddr *>(&client_address),
+                    client_address_len);
         }
 
         std::cout << std::endl;
