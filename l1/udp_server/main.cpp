@@ -43,9 +43,8 @@ int main(int argc, char const *argv[])
     {
         .sin_family = PF_INET,
         .sin_port = htons(port),
+        .sin_addr.s_addr = INADDR_ANY
     };
-
-    addr.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(sock, reinterpret_cast<const sockaddr*>(&addr), sizeof(addr)) != 0)
     {
@@ -92,10 +91,9 @@ int main(int argc, char const *argv[])
                 exit = true;
             }
 
-            // struct sockaddr *addr; 
-            // socklen_t addrlen; 
             char hbuf[256];
             std::string return_client_name_and_data;
+
             if(getnameinfo(reinterpret_cast<sockaddr *>(&client_address), client_address_len, hbuf, sizeof(hbuf), nullptr, 0, NI_NAMEREQD)) 
             {
                 return_client_name_and_data = "No name " + std::string(buffer);
@@ -104,14 +102,7 @@ int main(int argc, char const *argv[])
             {
                 return_client_name_and_data = std::string(hbuf) + ' ' + std::string(buffer);
             }
-                // if ("exit" == command_string) run = false;
-                // send(sock, &buf, readden, 0);
 
-                /*            std::string command_string = {buffer, 0, len};
-                            rtrim(command_string);
-                            std::cout << command_string << std::endl;
-                */
-                // Send same content back to the client ("echo").
             sendto(sock, return_client_name_and_data.c_str(), return_client_name_and_data.size(), 0, reinterpret_cast<const sockaddr *>(&client_address),
                     client_address_len);
         }
