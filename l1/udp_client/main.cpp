@@ -2,7 +2,7 @@
 #include<iostream>
 #include<winsock2.h>
 
-#pragma comment(lib,"ws2_32.lib") //Winsock Library
+// #pragma comment(lib,"ws2_32.lib") //Winsock Library
 
 #define SERVER "127.0.0.1"	//ip address of udp server
 #define BUFLEN 256	//Max length of buffer

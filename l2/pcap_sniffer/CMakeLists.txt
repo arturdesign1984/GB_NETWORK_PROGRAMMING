@@ -10,15 +10,15 @@ else()
     # Locally-installed.
     set(PCAP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/npcap-sdk-1.12/Include")
     if(CMAKE_CL_64)
-        link_directories("${CMAKE_CURRENT_SOURCE_DIR}/npcap-sdk-1.12/Lib/x64")
-    else()
         link_directories("${CMAKE_CURRENT_SOURCE_DIR}/npcap-sdk-1.12/Lib")
+    else()
+        link_directories("${CMAKE_CURRENT_SOURCE_DIR}/npcap-sdk-1.12/Lib/x64")
     endif()
 endif()
 
 set(${PROJECT_NAME}_SRC main.cpp packet_printer.cpp)
 
-source_group(source FILES ${${PROJECT_NAME}_SRC}})
+source_group(source FILES ${${PROJECT_NAME}_SRC})
 
 add_executable("${PROJECT_NAME}" "${${PROJECT_NAME}_SRC}")
 

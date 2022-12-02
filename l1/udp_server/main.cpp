@@ -43,8 +43,9 @@ int main(int argc, char const *argv[])
     {
         .sin_family = PF_INET,
         .sin_port = htons(port),
-        .sin_addr.s_addr = INADDR_ANY
     };
+    
+    addr.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(sock, reinterpret_cast<const sockaddr*>(&addr), sizeof(addr)) != 0)
     {
